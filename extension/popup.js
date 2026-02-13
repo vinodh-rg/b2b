@@ -3,8 +3,8 @@
 // Replace with your deployed signaling server WSS URL in production
 // Sample deployed URL: wss://crossdrop.onrender.com
 // For local dev: ws://localhost:3000
-const DEFAULT_WSS = 'ws://localhost:3000';
-const SIGNALING_WSS = (typeof SIGNALING_URL !== 'undefined') ? SIGNALING_URL : (localStorage.getItem('crossdrop_signaling') || DEFAULT_WSS);
+const SIGNALING_WSS = localStorage.getItem('crossdrop_signaling') || 'wss://crossdrop-signaling-server.onrender.com';
+// Fallback to localhost if needed for dev: 'ws://localhost:3000';
 let ws; let myId = null; let devices = [];
 
 const statusEl = document.getElementById('status');
