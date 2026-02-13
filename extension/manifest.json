@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "CrossDrop",
+  "version": "1.0.0",
+  "description": "Peer-to-peer file sharing using WebRTC DataChannels.",
+  "action": { "default_popup": "popup.html" },
+  "permissions": [ "storage", "activeTab" ],
+  "host_permissions": [ "ws://localhost:3000/*", "http://localhost:3000/*" ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

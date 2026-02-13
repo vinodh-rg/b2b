@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CrossDrop</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>CrossDrop</h1>
+    <div id="status">Disconnected</div>
+  </header>
+  <main>
+    <section id="devices">
+      <h2>Nearby Devices</h2>
+      <ul id="deviceList"></ul>
+    </section>
+
+    <section id="transfer">
+      <h2>Send File</h2>
+      <input id="fileInput" type="file" />
+      <select id="targetSelect"><option value="">Select device</option></select>
+      <button id="sendBtn">Send</button>
+
+      <div id="progressArea" class="hidden">
+        <div id="fileName"></div>
+        <progress id="progress" max="100" value="0"></progress>
+        <div id="speed">0 KB/s</div>
+        <div id="connStatus">Idle</div>
+      </div>
+    </section>
+
+    <section id="settings">
+      <label><input id="darkToggle" type="checkbox"> Dark mode</label>
+    </section>
+
+    <section id="errors"></section>
+    <section id="pairing">
+      <h2>Pairing</h2>
+      <div>Your Device ID: <code id="deviceId">...</code></div>
+      <div id="qrWrap"><img id="qrImg" alt="QR" /></div>
+      <div><button id="scanBtn">Scan QR</button></div>
+      <div id="scanner" class="hidden">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" class="hidden"></canvas>
+        <button id="stopScan">Stop</button>
+      </div>
+      <div>
+        <input id="pairInput" placeholder="Enter device ID to pair" />
+        <button id="pairBtn">Send Pair Request</button>
+      </div>
+      <h3>Trusted Devices</h3>
+      <ul id="trustedList"></ul>
+    </section>
+  </main>
+
+  <script src="qrcode.min.js"></script>
+  <script src="jsQR.min.js"></script>
+  <script src="webrtc.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

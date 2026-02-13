@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CrossDrop Web</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header><h1>CrossDrop (Web)</h1><div id="status">Disconnected</div></header>
+    <main>
+      <div id="left">
+        <h2>Devices</h2>
+        <ul id="deviceList"></ul>
+      </div>
+      <div id="right">
+        <h2>Send</h2>
+        <input id="fileInput" type="file" />
+        <select id="targetSelect"></select>
+        <button id="sendBtn">Send</button>
+        <div id="progressArea" class="hidden">
+          <div id="fileName"></div>
+          <progress id="progress" max="100" value="0"></progress>
+          <div id="speed">0 KB/s</div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/extension/webrtc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
