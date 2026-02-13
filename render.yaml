@@ -3,7 +3,7 @@ services:
     name: crossdrop-signaling-server
     env: docker
     dockerContext: ./server
-    repo: https://github.com/yourusername/crossdrop # Update this with your actual repo URL
+    repo: https://github.com/vinodh-rg/b2b # Update this with your actual repo URL
     branch: main
     plan: free
     region: singapore # Choose closest region
