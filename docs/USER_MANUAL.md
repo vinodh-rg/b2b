@@ -2,15 +2,23 @@
 
 **Cross-Platform File Sharing Extension**
 
-## 1. Installation
+### 1. Installation
 
-### Server (Self-Hosted)
-1.  Navigate to the `server/` directory.
-2.  Run `npm install`.
-3.  Start the server: `npm start`.
-    *   For cloud deployment, see the [Developer Guide](DEVELOPER_GUIDE.md).
+#### Option A: Download (Recommended)
+1.  **Download**: Get the latest `crossdrop-extension.zip` from the [Website](https://vinodh-rg.github.io/b2b/) or [GitHub Releases](https://github.com/vinodh-rg/b2b/releases).
+2.  **Unzip**: Extract the zip file to a folder.
+3.  **Install**:
+    *   Open Chrome/Edge -> `chrome://extensions`
+    *   Turn on **Developer Mode** (top right).
+    *   Click **Load Unpacked**.
+    *   Select the extracted folder.
 
-### Browser Extension
+#### Option B: Build from Source
+1.  Clone the repository.
+2.  Navigate to `extension/` folder.
+3.  Follow "Install" steps above seeking the `extension/` folder.
+
+### Browser Extension (Legacy Instructions)
 1.  Open Chrome/Edge and go to `chrome://extensions`.
 2.  Enable **Developer Mode** (toggle in top right).
 3.  Click **Load unpacked**.
