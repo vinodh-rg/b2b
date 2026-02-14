@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CrossDrop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Peer-to-peer file sharing using WebRTC DataChannels.",
   "action": {
     "default_popup": "popup.html"
