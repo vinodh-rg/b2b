@@ -47,6 +47,11 @@ function routeMessage(targetId, message) {
 // REST: health, pair, token
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+// Root endpoint for browser verification
+app.get('/', (req, res) => {
+  res.status(200).send('CrossDrop Signaling Server is Running 🚀');
+});
+
 app.post('/pair', (req, res) => {
   // pairing: sender requests pairing to targetId, server forwards pairing request
   const { fromId, toId, message } = req.body;
