@@ -126,7 +126,17 @@ function connect() {
     const msg = JSON.parse(ev.data);
     switch (msg.type) {
       case 'welcome': myId = msg.id; break;
-      case 'device-list': devices = msg.devices.filter(d => d.id !== myId); renderDevices(); break;
+      case 'device-list':
+        console.log('Device list received:', msg.devices);
+        devices = msg.devices.filter(d => d.id !== myId);
+        renderDevices();
+        break;
+      case 'registered':
+        console.log('Registered with ID:', msg.id);
+        myId = msg.id;
+        localStorage.setItem('crossdrop_device_id', myId);
+        renderDeviceIdAndQr();
+        break;
       case 'pair-request': handleIncomingPair(msg); break;
       case 'pair-response': handlePairResponse(msg); break;
       case 'offer': handleOffer(msg); break;
@@ -213,16 +223,37 @@ stopScanBtn.onclick = () => stopScan();
 function renderDevices() {
   deviceListEl.innerHTML = '';
   targetSelect.innerHTML = '<option value="">Select device</option>';
-  devices.forEach(d => {
+
+  const uniqueIds = new Set();
+
+  // Helper to add device
+  const addDevice = (d, label) => {
+    if (uniqueIds.has(d.id)) return;
+    uniqueIds.add(d.id);
+
     const li = document.createElement('li');
-    li.textContent = `${d.name} (${d.localIp || 'remote'})`;
+    li.textContent = label;
     const btn = document.createElement('button'); btn.textContent = 'Connect';
     btn.onclick = () => { targetSelect.value = d.id; };
     li.appendChild(btn);
     deviceListEl.appendChild(li);
 
-    const opt = document.createElement('option'); opt.value = d.id; opt.textContent = d.name; targetSelect.appendChild(opt);
+    const opt = document.createElement('option'); opt.value = d.id; opt.textContent = label; targetSelect.appendChild(opt);
+  };
+
+  // 1. Online devices from server
+  devices.forEach(d => {
+    addDevice(d, `${d.name} (${d.localIp || 'remote'})`);
   });
+
+  // 2. Trusted devices (if not already added)
+  const raw = localStorage.getItem('crossdrop_trusted');
+  const trustedMap = raw ? JSON.parse(raw) : {};
+  for (const id in trustedMap) {
+    if (id !== myId && !uniqueIds.has(id)) {
+      addDevice({ id, name: trustedMap[id].name }, `${trustedMap[id].name || id} (Paired)`);
+    }
+  }
 }
 
 async function handleOffer(msg) {
