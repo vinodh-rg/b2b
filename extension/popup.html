@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CrossDrop</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header>
     <h1>CrossDrop</h1>
@@ -20,7 +22,9 @@
     <section id="transfer">
       <h2>Send File</h2>
       <input id="fileInput" type="file" />
-      <select id="targetSelect"><option value="">Select device</option></select>
+      <select id="targetSelect">
+        <option value="">Select device</option>
+      </select>
       <button id="sendBtn">Send</button>
 
       <div id="progressArea" class="hidden">
@@ -59,5 +63,7 @@
   <script src="jsQR.min.js"></script>
   <script src="webrtc.js"></script>
   <script src="popup.js"></script>
+  <footer style="text-align: center; font-size: 0.8em; color: #666; padding: 10px;">v1.0.3</footer>
 </body>
+
 </html>
