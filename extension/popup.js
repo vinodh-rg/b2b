@@ -337,3 +337,4 @@ darkToggle.onchange = () => { document.body.classList.toggle('dark', darkToggle.
 renderDeviceIdAndQr();
 loadTrusted();
 connect();
+alert('CrossDrop v1.0.3 Loaded - If you see this, the update worked!');
