@@ -112,7 +112,7 @@ async function registerToServer(wsConn) {
       return;
     }
   } catch (e) { /* fallback to websocket registration */ }
-  wsConn.send(JSON.stringify({ type: 'register', name: navigator.userAgent, info: { localIp: ips[0] || null } }));
+  wsConn.send(JSON.stringify({ type: 'register', id, name: navigator.userAgent, info: { localIp: ips[0] || null } }));
 }
 
 function connect() {
@@ -315,6 +315,10 @@ sendBtn.onclick = async () => {
     setTimeout(() => { clearInterval(chk); res(); }, 15000);
   });
   await waitOpen();
+  if (!peer.dc || peer.dc.readyState !== 'open') {
+    logErr('Connection timed out. Target reachable?');
+    return;
+  }
   progressArea.classList.remove('hidden');
   await peer.sendFile(file);
 };

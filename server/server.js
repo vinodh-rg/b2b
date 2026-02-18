@@ -109,7 +109,7 @@ wss.on('connection', function connection(ws, req) {
         }
       }
       // fallback: register ephemeral
-      const device = registry.register({ name: msg.name || 'unknown', info: msg.info || {} });
+      const device = registry.register({ id: msg.id, name: msg.name || 'unknown', info: msg.info || {} });
       clients.set(device.id, { ws, id: device.id });
       ws.send(JSON.stringify({ type: 'registered', id: device.id }));
       broadcastDeviceList();
