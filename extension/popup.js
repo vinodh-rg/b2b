@@ -267,6 +267,10 @@ async function handleOffer(msg) {
 
 async function handleAnswer(msg) {
   if (!peer) return;
+  if (peer.pc && peer.pc.signalingState !== 'have-local-offer') {
+    console.warn('Received answer but not in have-local-offer state:', peer.pc.signalingState);
+    return;
+  }
   await peer.handleRemoteDesc(msg.answer);
 }
 
