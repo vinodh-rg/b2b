@@ -266,12 +266,16 @@ async function handleOffer(msg) {
 }
 
 async function handleAnswer(msg) {
-  if (!peer) return;
-  if (peer.pc && peer.pc.signalingState !== 'have-local-offer') {
-    console.warn('Received answer but not in have-local-offer state:', peer.pc.signalingState);
-    return;
+  try {
+    if (!peer) return;
+    if (peer.pc && peer.pc.signalingState !== 'have-local-offer') {
+      console.warn('Received answer but not in have-local-offer state:', peer.pc.signalingState);
+      return;
+    }
+    await peer.handleRemoteDesc(msg.answer);
+  } catch (e) {
+    console.warn('Failed to handle answer:', e);
   }
-  await peer.handleRemoteDesc(msg.answer);
 }
 
 async function handleCandidate(msg) {
