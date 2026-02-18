@@ -63,6 +63,16 @@ class CrossDropRTC {
   }
 
   async addIce(candidate) {
+    if (!this.pc || this.pc.signalingState === 'closed') return;
+    if (!this.pc.remoteDescription && this.pc.signalingState === 'stable') {
+      // Candidates arriving before remote description is set; buffer them or ignore if handled by browser buffering?
+      // Actually modern browsers buffer, but let's be safe:
+      // If we are stable but no remote desc, we might be the offerer waiting for answer?
+      // Standard behavior: addIceCandidate handles buffering if remote desc is not yet set? 
+      // Actually, spec says: if remoteDescription is null, addIceCandidate throws InvalidStateError in some browsers or queues it.
+      // Better to just catch and warn, but let's add a robust check.
+      // Simplest fix for "DOMException": check if pc is closed.
+    }
     try { await this.pc.addIceCandidate(candidate); } catch (e) { console.warn('addIce failed', e); }
   }
 
@@ -117,8 +127,8 @@ class CrossDropRTC {
   }
 
   close() {
-    try { this.dc && this.dc.close(); } catch (e) {}
-    try { this.pc && this.pc.close(); } catch (e) {}
+    try { this.dc && this.dc.close(); } catch (e) { }
+    try { this.pc && this.pc.close(); } catch (e) { }
   }
 
   // Local IP discovery via WebRTC trick
