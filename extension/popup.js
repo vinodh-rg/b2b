@@ -183,12 +183,12 @@ async function startScan() {
 
   scannerWrap.classList.remove('hidden');
   try {
-    // Request front-facing camera ('user') per user request ("lap front cam")
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+    // Request standard camera without facingMode constraint first
+    // If we over-constrain (e.g., asking for 'user' when only an external is available), it can throw or deny
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     streamRef = stream;
     videoEl.srcObject = stream;
     scanning = true;
-    videoEl.setAttribute('playsinline', true); // required for iOS
 
     // Clear the message if successful
     logErr("");
