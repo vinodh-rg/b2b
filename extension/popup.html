@@ -47,16 +47,10 @@
       </section>
 
       <section id="pairing">
-        <h2>Scan Receiver QR</h2>
-        <div><button id="scanBtn">Scan QR</button></div>
-        <div id="scanner" class="hidden">
-          <video id="video" autoplay playsinline></video>
-          <canvas id="canvas" class="hidden"></canvas>
-          <button id="stopScan">Stop</button>
-        </div>
+        <h2>Pair Device Manually</h2>
         <div>
           <input id="pairInput" placeholder="Enter device ID" />
-          <button id="pairBtn">Pair Manually</button>
+          <button id="pairBtn">Pair</button>
         </div>
       </section>
     </section>
@@ -81,7 +75,6 @@
   </main>
 
   <script src="qrcode.min.js"></script>
-  <script src="jsQR.min.js"></script>
   <script src="webrtc.js"></script>
   <script src="popup.js"></script>
   <footer style="text-align: center; font-size: 0.8em; color: #666; padding: 10px;">v1.0.3</footer>

@@ -78,12 +78,6 @@ function handlePairResponse(msg) {
     logErr('Pair rejected by ' + msg.from);
   }
 }
-const scanBtn = document.getElementById('scanBtn');
-const scannerWrap = document.getElementById('scanner');
-const videoEl = document.getElementById('video');
-const canvasEl = document.getElementById('canvas');
-const stopScanBtn = document.getElementById('stopScan');
-
 let peer = null; let targetId = null;
 
 function logErr(msg) { errors.textContent = msg; }
@@ -168,80 +162,7 @@ function renderDeviceIdAndQr() {
 
 // ... existing code ...
 
-// QR scanning using getUserMedia + jsQR
-let scanning = false; let streamRef = null;
-async function startScan() {
-  if (scanning) return;
-  // jsQR should be loaded via script tag
-  if (typeof jsQR === 'undefined') {
-    logErr('jsQR library not loaded');
-    return;
-  }
-
-  // Use DOM for message instead of blocking alert() which causes DOMException in play()
-  logErr("Please allow camera access in the browser prompt to scan QR codes.");
-
-  scannerWrap.classList.remove('hidden');
-  try {
-    // Request standard camera without facingMode constraint first
-    // If we over-constrain (e.g., asking for 'user' when only an external is available), it can throw or deny
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    streamRef = stream;
-    videoEl.srcObject = stream;
-    scanning = true;
-
-    // Clear the message if successful
-    logErr("");
-
-    // Only play if stream is valid
-    if (stream) {
-      // Handle play promise to catch interruptions (DOMException)
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Video play interrupted:", error);
-          logErr("Camera started but video playback failed.");
-        });
-      }
-      requestAnimationFrame(scanLoop);
-    }
-  } catch (e) {
-    console.error(e);
-    logErr('Camera access denied or error: ' + e.message + '. Please allow camera access in browser settings.');
-    scannerWrap.classList.add('hidden');
-    scanning = false;
-  }
-}
-
-function stopScan() {
-  scanning = false; scannerWrap.classList.add('hidden');
-  if (streamRef) { streamRef.getTracks().forEach(t => t.stop()); streamRef = null; }
-}
-
-function scanLoop() {
-  if (!scanning) return;
-  if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-    const w = videoEl.videoWidth, h = videoEl.videoHeight;
-    canvasEl.width = w; canvasEl.height = h;
-    const ctx = canvasEl.getContext('2d');
-    ctx.drawImage(videoEl, 0, 0, w, h);
-    const img = ctx.getImageData(0, 0, w, h);
-    const code = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" });
-    if (code && code.data) {
-      // Valid QR found
-      pairInput.value = code.data;
-      stopScan();
-      logErr('QR scanned: ' + code.data);
-      // Optional: Auto-click pair
-      // pairBtn.click();
-      return;
-    }
-  }
-  requestAnimationFrame(scanLoop);
-}
-
-scanBtn.onclick = () => startScan();
-stopScanBtn.onclick = () => stopScan();
+// (QR scanning logic removed)
 
 function renderDevices() {
   deviceListEl.innerHTML = '';

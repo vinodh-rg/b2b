@@ -8,8 +8,7 @@
   },
   "permissions": [
     "storage",
-    "activeTab",
-    "videoCapture"
+    "activeTab"
   ],
   "host_permissions": [
     "ws://localhost:3000/*",
