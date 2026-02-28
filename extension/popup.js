@@ -177,16 +177,21 @@ async function startScan() {
     logErr('jsQR library not loaded');
     return;
   }
+
+  alert("CrossDrop needs access to your camera to scan QR codes. Please 'Allow' the camera permission in the next prompt if asked.");
+
   scannerWrap.classList.remove('hidden');
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    // Request front-facing camera ('user') per user request ("lap front cam")
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     streamRef = stream; videoEl.srcObject = stream; scanning = true;
     videoEl.setAttribute('playsinline', true); // required for iOS
     videoEl.play();
     requestAnimationFrame(scanLoop);
   } catch (e) {
     console.error(e);
-    logErr('Camera access denied or error: ' + e.message);
+    logErr('Camera access denied or error: ' + e.message + '. Please allow camera access in browser settings.');
+    scannerWrap.classList.add('hidden');
   }
 }
 
@@ -258,6 +263,13 @@ function renderDevices() {
 
 async function handleOffer(msg) {
   targetId = msg.from;
+
+  // Ask for connection permission
+  if (!confirm(`Incoming connection request from: ${msg.from}. Do you accept?`)) {
+    logErr(`Connection request from ${msg.from} denied by user.`);
+    return; // Don't create peer, connection aborted
+  }
+
   peer = new CrossDropRTC({ onData: onData, onProgress: onProgress, onState: onState });
   peer.createPeer(false);
   await peer.handleRemoteDesc(msg.offer);
