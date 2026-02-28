@@ -316,10 +316,35 @@ function onProgress(p) {
 
 function onData({ blob, name }) {
   if (incomingRejected) return;
-  // auto-download
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = name; a.click();
-  URL.revokeObjectURL(url);
+
+  // Try auto-download just in case some browsers permit it
+  try {
+    const aAuto = document.createElement('a'); aAuto.href = url; aAuto.download = name; aAuto.click();
+  } catch (e) {
+    console.warn("Auto-download silenty failed/prevented", e);
+  }
+
+  // Add visible download button to the UI
+  const receiveList = document.getElementById('receivedList');
+  if (receiveList) {
+    const li = document.createElement('li');
+    li.style.marginBottom = '10px';
+
+    const aBtn = document.createElement('a');
+    aBtn.href = url;
+    aBtn.download = name;
+    aBtn.textContent = `💾 Download: ${name}`;
+    aBtn.className = 'big-btn';
+    aBtn.style.display = 'inline-block';
+    aBtn.style.textDecoration = 'none';
+
+    li.appendChild(aBtn);
+    receiveList.appendChild(li);
+    logErr(`File transfer complete! Click the download button above.`);
+  } else {
+    logErr(`File reception complete, but could not show download button.`);
+  }
 }
 
 sendBtn.onclick = async () => {
