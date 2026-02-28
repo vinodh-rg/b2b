@@ -178,20 +178,38 @@ async function startScan() {
     return;
   }
 
-  alert("CrossDrop needs access to your camera to scan QR codes. Please 'Allow' the camera permission in the next prompt if asked.");
+  // Use DOM for message instead of blocking alert() which causes DOMException in play()
+  logErr("Please allow camera access in the browser prompt to scan QR codes.");
 
   scannerWrap.classList.remove('hidden');
   try {
     // Request front-facing camera ('user') per user request ("lap front cam")
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    streamRef = stream; videoEl.srcObject = stream; scanning = true;
+    streamRef = stream;
+    videoEl.srcObject = stream;
+    scanning = true;
     videoEl.setAttribute('playsinline', true); // required for iOS
-    videoEl.play();
-    requestAnimationFrame(scanLoop);
+
+    // Clear the message if successful
+    logErr("");
+
+    // Only play if stream is valid
+    if (stream) {
+      // Handle play promise to catch interruptions (DOMException)
+      const playPromise = videoEl.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Video play interrupted:", error);
+          logErr("Camera started but video playback failed.");
+        });
+      }
+      requestAnimationFrame(scanLoop);
+    }
   } catch (e) {
     console.error(e);
     logErr('Camera access denied or error: ' + e.message + '. Please allow camera access in browser settings.');
     scannerWrap.classList.add('hidden');
+    scanning = false;
   }
 }
 
