@@ -283,14 +283,50 @@ async function handleCandidate(msg) {
   await peer.addIce(msg.candidate);
 }
 
+// View elements
+const homeView = document.getElementById('homeView');
+const sendView = document.getElementById('sendView');
+const receiveView = document.getElementById('receiveView');
+const navSendBtn = document.getElementById('navSendBtn');
+const navReceiveBtn = document.getElementById('navReceiveBtn');
+const backBtns = document.querySelectorAll('.backBtn');
+
+function showView(viewId) {
+  homeView.classList.add('hidden');
+  sendView.classList.add('hidden');
+  receiveView.classList.add('hidden');
+  document.getElementById(viewId).classList.remove('hidden');
+}
+
+navSendBtn.onclick = () => showView('sendView');
+navReceiveBtn.onclick = () => showView('receiveView');
+backBtns.forEach(btn => {
+  btn.onclick = () => showView(btn.getAttribute('data-target'));
+});
+
+let incomingRejected = false;
+
 function onState(st) {
   if (st.type === 'ice') ws.send(JSON.stringify({ type: 'candidate', target: targetId, candidate: st.candidate }));
   if (st.type === 'dc-open') connStatus.textContent = 'DataChannel open';
   if (st.type === 'dc-close') connStatus.textContent = 'DataChannel closed';
   if (st.type === 'sending') fileNameEl.textContent = st.file;
+  if (st.type === 'incoming') {
+    incomingRejected = false; // Reset state
+    if (!confirm(`Allow incoming file transport for "${st.name}" (${Math.round(st.size / 1024)} KB) from a trusted device?`)) {
+      incomingRejected = true;
+      if (peer) {
+        logErr('File reception rejected by user.');
+        peer.close();
+      }
+    } else {
+      logErr(`Receiving file: ${st.name}`);
+    }
+  }
 }
 
 function onProgress(p) {
+  if (incomingRejected) return;
   if (p.total) {
     const val = p.sent ? Math.round((p.sent / p.total) * 100) : (p.received ? Math.round((p.received / p.total) * 100) : 0);
     progressBar.value = val;
@@ -299,6 +335,7 @@ function onProgress(p) {
 }
 
 function onData({ blob, name }) {
+  if (incomingRejected) return;
   // auto-download
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = name; a.click();
@@ -337,4 +374,4 @@ darkToggle.onchange = () => { document.body.classList.toggle('dark', darkToggle.
 renderDeviceIdAndQr();
 loadTrusted();
 connect();
-alert('CrossDrop v1.0.3 Loaded - If you see this, the update worked!');
+alert('CrossDrop UI Redesign Loaded!');

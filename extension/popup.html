@@ -14,25 +14,63 @@
     <div id="status">Disconnected</div>
   </header>
   <main>
-    <section id="devices">
-      <h2>Nearby Devices</h2>
-      <ul id="deviceList"></ul>
+    <!-- HOME VIEW -->
+    <section id="homeView">
+      <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+        <button id="navSendBtn" class="big-btn">🚀 Sender</button>
+        <button id="navReceiveBtn" class="big-btn">📥 Receiver</button>
+      </div>
     </section>
 
-    <section id="transfer">
-      <h2>Send File</h2>
-      <input id="fileInput" type="file" />
-      <select id="targetSelect">
-        <option value="">Select device</option>
-      </select>
-      <button id="sendBtn">Send</button>
+    <!-- SEND VIEW -->
+    <section id="sendView" class="hidden">
+      <button class="backBtn" data-target="homeView">← Back</button>
+      <section id="devices">
+        <h2>Nearby Devices</h2>
+        <ul id="deviceList"></ul>
+      </section>
 
-      <div id="progressArea" class="hidden">
-        <div id="fileName"></div>
-        <progress id="progress" max="100" value="0"></progress>
-        <div id="speed">0 KB/s</div>
-        <div id="connStatus">Idle</div>
-      </div>
+      <section id="transfer">
+        <h2>Send File</h2>
+        <input id="fileInput" type="file" />
+        <select id="targetSelect">
+          <option value="">Select device</option>
+        </select>
+        <button id="sendBtn">Send</button>
+
+        <div id="progressArea" class="hidden">
+          <div id="fileName"></div>
+          <progress id="progress" max="100" value="0"></progress>
+          <div id="speed">0 KB/s</div>
+          <div id="connStatus">Idle</div>
+        </div>
+      </section>
+
+      <section id="pairing">
+        <h2>Scan Receiver QR</h2>
+        <div><button id="scanBtn">Scan QR</button></div>
+        <div id="scanner" class="hidden">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" class="hidden"></canvas>
+          <button id="stopScan">Stop</button>
+        </div>
+        <div>
+          <input id="pairInput" placeholder="Enter device ID" />
+          <button id="pairBtn">Pair Manually</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- RECEIVE VIEW -->
+    <section id="receiveView" class="hidden">
+      <button class="backBtn" data-target="homeView">← Back</button>
+      <section id="pairing">
+        <h2>Receive Files</h2>
+        <div>Your Device ID: <code id="deviceId">...</code></div>
+        <div id="qrWrap"><img id="qrImg" alt="QR" /></div>
+        <h3>Trusted Devices</h3>
+        <ul id="trustedList"></ul>
+      </section>
     </section>
 
     <section id="settings">
@@ -40,23 +78,6 @@
     </section>
 
     <section id="errors"></section>
-    <section id="pairing">
-      <h2>Pairing</h2>
-      <div>Your Device ID: <code id="deviceId">...</code></div>
-      <div id="qrWrap"><img id="qrImg" alt="QR" /></div>
-      <div><button id="scanBtn">Scan QR</button></div>
-      <div id="scanner" class="hidden">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas" class="hidden"></canvas>
-        <button id="stopScan">Stop</button>
-      </div>
-      <div>
-        <input id="pairInput" placeholder="Enter device ID to pair" />
-        <button id="pairBtn">Send Pair Request</button>
-      </div>
-      <h3>Trusted Devices</h3>
-      <ul id="trustedList"></ul>
-    </section>
   </main>
 
   <script src="qrcode.min.js"></script>
