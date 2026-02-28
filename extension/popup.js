@@ -65,6 +65,7 @@ function handleIncomingPair(msg) {
   if (confirm(`Pair request from ${from}. Accept?`)) {
     saveTrusted(from, { name: from });
     ws.send(JSON.stringify({ type: 'pair-response', from: ensureDeviceId(), target: from, accepted: true }));
+    renderDevices(); // Update UI
   } else {
     ws.send(JSON.stringify({ type: 'pair-response', from: ensureDeviceId(), target: from, accepted: false }));
   }
@@ -74,8 +75,10 @@ function handlePairResponse(msg) {
   if (msg.accepted) {
     saveTrusted(msg.from, { name: msg.from });
     logErr('Pair accepted by ' + msg.from);
+    renderDevices(); // Re-render to show Select button and add to dropdown
   } else {
     logErr('Pair rejected by ' + msg.from);
+    renderDevices(); // Re-render to re-enable Pair button
   }
 }
 let peer = null; let targetId = null;
@@ -166,36 +169,62 @@ function renderDeviceIdAndQr() {
 
 function renderDevices() {
   deviceListEl.innerHTML = '';
-  targetSelect.innerHTML = '<option value="">Select device</option>';
+  targetSelect.innerHTML = '<option value="">Select paired device</option>';
 
   const uniqueIds = new Set();
+  const raw = localStorage.getItem('crossdrop_trusted');
+  const trustedMap = raw ? JSON.parse(raw) : {};
 
-  // Helper to add device
-  const addDevice = (d, label) => {
+  // 1. Online devices from server
+  devices.forEach(d => {
     if (uniqueIds.has(d.id)) return;
     uniqueIds.add(d.id);
 
     const li = document.createElement('li');
-    li.textContent = label;
-    const btn = document.createElement('button'); btn.textContent = 'Connect';
-    btn.onclick = () => { targetSelect.value = d.id; };
+    const isTrusted = !!trustedMap[d.id];
+
+    // Create button based on trust status
+    const btn = document.createElement('button');
+    if (isTrusted) {
+      li.textContent = `${d.name} (${d.localIp || 'remote'}) `;
+      btn.textContent = 'Select';
+      btn.onclick = () => { targetSelect.value = d.id; };
+
+      // Only trusted, online devices can receive files
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = `${d.name} (Online)`;
+      targetSelect.appendChild(opt);
+    } else {
+      li.textContent = `${d.name} (${d.localIp || 'remote'}) `;
+      btn.textContent = 'Pair';
+      btn.onclick = () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          const fromId = ensureDeviceId();
+          ws.send(JSON.stringify({ type: 'pair-request', from: fromId, target: d.id, message: 'Requesting to pair' }));
+          logErr(`Pair request sent to ${d.name}`);
+          btn.textContent = 'Request Sent...';
+          btn.disabled = true;
+        } else {
+          logErr('Not connected to signaling server');
+        }
+      };
+    }
+
     li.appendChild(btn);
     deviceListEl.appendChild(li);
-
-    const opt = document.createElement('option'); opt.value = d.id; opt.textContent = label; targetSelect.appendChild(opt);
-  };
-
-  // 1. Online devices from server
-  devices.forEach(d => {
-    addDevice(d, `${d.name} (${d.localIp || 'remote'})`);
   });
 
-  // 2. Trusted devices (if not already added)
-  const raw = localStorage.getItem('crossdrop_trusted');
-  const trustedMap = raw ? JSON.parse(raw) : {};
+  // 2. Trusted devices that are currently offline
   for (const id in trustedMap) {
     if (id !== myId && !uniqueIds.has(id)) {
-      addDevice({ id, name: trustedMap[id].name }, `${trustedMap[id].name || id} (Paired)`);
+      const li = document.createElement('li');
+      li.textContent = `${trustedMap[id].name || id} (Offline paired) `;
+      const btn = document.createElement('button');
+      btn.textContent = 'Offline';
+      btn.disabled = true;
+      li.appendChild(btn);
+      deviceListEl.appendChild(li);
     }
   }
 }
